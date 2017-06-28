@@ -38,19 +38,15 @@ class JoyStick (Widget):
 	
 	def move_pad(self,x,y):
 		distance = ((self.center_x - x)**2 + (self.center_y - y) ** 2)**(0.5)
-		print("Distance to from center: {0}".format(distance))
 		if distance > self.reach - self.ids.pad.diameter/2:
-			print("Out of circle")
-			new_distance = self.reach * 1.0 / distance
-			new_x = (self.center_x - x) * new_distance
+			new_distance = (self.reach - self.ids.pad.diameter/2) * 1.0 / distance
+			new_x = -(self.center_x - x) * new_distance
 			new_x = int(self.center_x + new_x)
-			new_y = (self.center_y - y) * new_distance
+			new_y = -(self.center_y - y) * new_distance
 			new_y = int(self.center_y + new_y)
-			self.ids.pad.x = new_x
-			self.ids.pad.y = new_y
-			print(new_x,new_y)
+			self.ids.pad.center_x = new_x
+			self.ids.pad.center_y = new_y
 		else:
-			print("In of circle!")
 			self.ids.pad.center = (x,y)
 		
 	
