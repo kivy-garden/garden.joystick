@@ -2,7 +2,7 @@
 
 Joystick Widget, intended to get analog like input from the user via a touch screen. The input can then be used as a control of some sort.  
 
-![Example](https://raw.githubusercontent.com/Narcolapser/garden.joystick/master/Joystick%20screenshot.png)  
+![Example](https://raw.githubusercontent.com/kivy-garden/garden.joystick/master/screenshot.png)
 
 ## Usage:  
 
