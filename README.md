@@ -12,7 +12,7 @@ Import it into your project like any other garden widget:
 from kivy.garden.joystick import Joystick
 ```
 
-### Widget Properties:  
+## Widget Properties:  
 
 **Joystick Data:**  
 
