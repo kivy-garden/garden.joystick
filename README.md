@@ -1,6 +1,6 @@
 # Kivy Garden: Joystick  
 
-Joystick Widget, intended to get analog like input from the user via a touch screen. The input can then be used as a control of some sort.  
+Touch-friendly, analog-gamepad style controls for Kivy.  
 
 ![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/Example.gif?raw=true)  
 
