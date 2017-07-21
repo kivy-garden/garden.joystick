@@ -6,6 +6,7 @@ Joystick Widget, intended to get analog like input from the user via a touch scr
 
 ### [**Code for Example**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
 
+&nbsp;  
 
 ## Widget Properties:  
 
@@ -26,6 +27,8 @@ See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master
 **Style:**  
 
 The joystick is composed 3 circles, two for the base (*inner & outer*) and one for the pad. Each of the circles has properties for size, background color, outline color, & outline width.
+
+&nbsp;  
 
 ## Usage:  
 
