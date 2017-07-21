@@ -22,7 +22,7 @@ See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master
 
 **Options:**
 
-- `sticky`: Enabled by default - causes the pad to rebound to the center of the joystick `on_touch_up`. When `False`, the pad will maintain its final position after `on_touch_up`.
+- `sticky`: False by default. When True, the pad will maintain its final position after `on_touch_up`. Otherwise, the pad will rebound to the center of the joystick `on_touch_up`.
 
 **Style:**  
 
