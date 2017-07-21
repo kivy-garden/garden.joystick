@@ -1,4 +1,5 @@
 from .joystickpad import JoystickPad
+from .touchdata import TouchData
 from kivy.uix.widget import Widget
 from kivy.properties import(BooleanProperty, NumericProperty,
                             ListProperty, ReferenceListProperty)
@@ -120,24 +121,16 @@ class Joystick(Widget):
     '''#####   >   Pad Control   ##########################################'''
     '''####################################################################'''
 
-    def move_pad(self, x, y, touch, from_touch_down):
-        x_distance = self.center_x - x
-        y_distance = self.center_y - y
-        x_offset = x - self.center_x
-        y_offset = y - self.center_y
-        relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
-        touch_is_external = relative_distance > self._total_radius
-        touch_in_range = relative_distance <= self._radius_difference
-        if touch_is_external and from_touch_down:
+    def move_pad(self, touch, from_touch_down):
+        td = self._get_touch_data(touch)
+        if td.is_external and from_touch_down:
             touch.ud['joystick'] = None
             return False
-        elif touch_in_range:
-            self._update_coordinates_from_internal_touch(
-                x, y, x_offset, y_offset, relative_distance)
+        elif td.in_range:
+            self._update_coordinates_from_internal_touch(touch, td)
             return True
-        elif not(touch_in_range):
-            self._update_coordinates_from_external_touch(
-                x_distance, y_distance, x_offset, y_offset, relative_distance)
+        elif not(td.in_range):
+            self._update_coordinates_from_external_touch(td)
             return True
 
     def center_pad(self):
@@ -146,27 +139,38 @@ class Joystick(Widget):
         self.pad_x = 0
         self.pad_y = 0
 
-    def _update_coordinates_from_external_touch(self, x_distance, y_distance,
-                                                x_offset, y_offset,
-                                                relative_distance):
-        pad_distance = self._radius_difference * (1.0 / relative_distance)
-        x_distance_offset = -x_distance * pad_distance
-        y_distance_offset = -y_distance * pad_distance
+    def _get_touch_data(self, touch):
+        x_distance = self.center_x - touch.x
+        y_distance = self.center_y - touch.y
+        x_offset = touch.x - self.center_x
+        y_offset = touch.y - self.center_y
+        relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
+        is_external = relative_distance > self._total_radius
+        in_range = relative_distance <= self._radius_difference
+        return TouchData(
+            x_distance, y_distance, x_offset, y_offset,
+            relative_distance, is_external, in_range)
+
+    def _update_coordinates_from_external_touch(self, touchdata):
+        td = touchdata
+        pad_distance = self._radius_difference * (1.0 / td.relative_distance)
+        x_distance_offset = -td.x_distance * pad_distance
+        y_distance_offset = -td.y_distance * pad_distance
         x = self.center_x + x_distance_offset
         y = self.center_y + y_distance_offset
         radius_offset = pad_distance / self._radius_difference
-        self.pad_x = x_offset * radius_offset
-        self.pad_y = y_offset * radius_offset
+        self.pad_x = td.x_offset * radius_offset
+        self.pad_y = td.y_offset * radius_offset
         self._magnitude = 1.0
         self.ids.pad.center = (x, y)
 
-    def _update_coordinates_from_internal_touch(self, x, y, x_offset,
-                                                y_offset, relative_distance):
-        self.pad_x = x_offset / self._radius_difference
-        self.pad_y = y_offset / self._radius_difference
-        self._magnitude = relative_distance / \
+    def _update_coordinates_from_internal_touch(self, touch, touchdata):
+        td = touchdata
+        self.pad_x = td.x_offset / self._radius_difference
+        self.pad_y = td.y_offset / self._radius_difference
+        self._magnitude = td.relative_distance / \
             (self._total_radius - self.ids.pad._radius)
-        self.ids.pad.center = (x, y)
+        self.ids.pad.center = (touch.x, touch.y)
 
     '''####################################################################'''
     '''#####   >   Layout Events   ########################################'''
@@ -178,6 +182,20 @@ class Joystick(Widget):
             self._update_outlines(size)
             self._update_circles(size)
             self._update_pad()
+
+    def on_size(self, *args):
+        self.do_layout()
+
+    def on_pos(self, *args):
+        self.do_layout()
+
+    def add_widget(self, widget):
+        super().add_widget(widget)
+        self.do_layout()
+
+    def remove_widget(self, widget):
+        super().remove_widget(widget)
+        self.do_layout()
 
     def _update_outlines(self, size):
         self._outer_line_width = (self.outer_line_width * size) \
@@ -204,20 +222,6 @@ class Joystick(Widget):
         self.ids.pad._background_color = self.pad_background_color
         self.ids.pad._line_color = self.pad_line_color
 
-    def on_size(self, *args):
-        self.do_layout()
-
-    def on_pos(self, *args):
-        self.do_layout()
-
-    def add_widget(self, widget):
-        super().add_widget(widget)
-        self.do_layout()
-
-    def remove_widget(self, widget):
-        super().remove_widget(widget)
-        self.do_layout()
-
     '''####################################################################'''
     '''#####   >   Touch Events   #########################################'''
     '''####################################################################'''
@@ -225,14 +229,12 @@ class Joystick(Widget):
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
             touch.ud['joystick'] = self
-            return self.move_pad(touch.x, touch.y,
-                                 touch=touch, from_touch_down=True)
+            return self.move_pad(touch, from_touch_down=True)
         return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if self._touch_is_active(touch):
-            return self.move_pad(touch.x, touch.y,
-                                 touch=touch, from_touch_down=False)
+            return self.move_pad(touch, from_touch_down=False)
         return super().on_touch_move(touch)
 
     def on_touch_up(self, touch):
