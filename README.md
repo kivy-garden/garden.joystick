@@ -4,12 +4,16 @@ Joystick Widget, intended to get analog like input from the user via a touch scr
 
 ![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/Example.gif?raw=true)  
 
+### [**Example Project**](https://github.com/kivy-garden/garden.joystick/tree/master/example).  
+
 
 ## Widget Properties:  
 
+See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master/joystick/joystick.py) for further refrence.  
+
 **Joystick Data:**  
 
-- 'pad', `pad_x`, `pad_y`: The position of the pad, relative to the center of the joystick.  
+- `pad`, `pad_x`, `pad_y`: The position of the pad, relative to the center of the joystick.  
 - `magnitude`: The distance of the pad from the center of the joystick. Use with radians or angle to get polar coordinates.  
 - `radians` & `angle`:  The radians/degrees around the joystick that the current position is at.
 
@@ -21,7 +25,7 @@ Joystick Widget, intended to get analog like input from the user via a touch scr
 
 **Style:**  
 
-The joystick is composed 3 circles, two for the base (*inner & outer*) and one for the pad. Each of the circles has properties for size, background color, outline color, & outline width. There
+The joystick is composed 3 circles, two for the base (*inner & outer*) and one for the pad. Each of the circles has properties for size, background color, outline color, & outline width.
 
 ## Usage:  
 
@@ -36,7 +40,7 @@ class DemoApp(App):
   def build(self):
     self.root = BoxLayout()
     joystick = Joystick()
-    joystick.bind(pad=lambda instance, pad: print("x:", pad[0], "   y:", pad[1]))
+    joystick.bind(pad=lambda instance, pad: print("x:", pad[0], "  y:", pad[1]))
     self.root.add_widget(joystick)
 
 DemoApp().run()
