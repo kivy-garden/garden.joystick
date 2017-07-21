@@ -55,6 +55,7 @@ DemoApp().run()
 BoxLayout:
 
   Joystick:
+    sticky: False
     outer_size: 1
     inner_size: 0.75
     pad_size:   0.5
