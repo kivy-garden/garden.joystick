@@ -4,7 +4,7 @@ Joystick Widget, intended to get analog like input from the user via a touch scr
 
 ![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/Example.gif?raw=true)  
 
-### [**Example Project**](https://github.com/kivy-garden/garden.joystick/tree/master/example).  
+### [**Code for Example**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
 
 
 ## Widget Properties:  
