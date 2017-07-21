@@ -127,16 +127,18 @@ class Joystick(Widget):
         y_offset = y - self.center_y
         relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
         touch_is_external = relative_distance > self._total_radius
-        touch_is_internal = relative_distance <= self._radius_difference
+        touch_in_range = relative_distance <= self._radius_difference
         if touch_is_external and from_touch_down:
             touch.ud['joystick'] = None
-            return
-        elif touch_is_internal:
+            return False
+        elif touch_in_range:
             self._update_coordinates_from_internal_touch(
                 x, y, x_offset, y_offset, relative_distance)
-        elif not(from_touch_down):
+            return True
+        elif not(touch_in_range):
             self._update_coordinates_from_external_touch(
                 x_distance, y_distance, x_offset, y_offset, relative_distance)
+            return True
 
     def center_pad(self):
         self.ids.pad.center = self.center
@@ -223,16 +225,14 @@ class Joystick(Widget):
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
             touch.ud['joystick'] = self
-            self.move_pad(touch.x, touch.y,
-                          touch=touch, from_touch_down=True)
-            return True
+            return self.move_pad(touch.x, touch.y,
+                                 touch=touch, from_touch_down=True)
         return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if self._touch_is_active(touch):
-            self.move_pad(touch.x, touch.y,
-                          touch=touch, from_touch_down=False)
-            return True
+            return self.move_pad(touch.x, touch.y,
+                                 touch=touch, from_touch_down=False)
         return super().on_touch_move(touch)
 
     def on_touch_up(self, touch):
