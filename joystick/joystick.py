@@ -83,7 +83,7 @@ class Joystick(Widget):
 
     is_active = BooleanProperty(False)
     '''True during on_touch_down & on_touch_move.
-           Remains False after on_touch_up.'''
+           Remains False after on_touch_up until the next touch event.'''
 
     '''####################################################################'''
     '''#####   >   Properties (Private   ##################################'''
