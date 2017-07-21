@@ -10,7 +10,7 @@ Touch-friendly, analog-gamepad style controls for Kivy.
 
 ## Widget Properties:  
 
-See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master/joystick/joystick.py) for further refrence.  
+See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master/joystick/joystick.py) for further reference.  
 
 **Joystick Data:**  
 
