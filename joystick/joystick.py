@@ -81,10 +81,6 @@ class Joystick(Widget):
     '''magnitude, radians, & angle can be used to
            calculate polar coordinates'''
 
-    is_active = BooleanProperty(False)
-    '''True during on_touch_down & on_touch_move.
-           Remains False after on_touch_up until the next touch event.'''
-
     '''####################################################################'''
     '''#####   >   Properties (Private)   #################################'''
     '''####################################################################'''
@@ -124,18 +120,23 @@ class Joystick(Widget):
     '''#####   >   Pad Control   ##########################################'''
     '''####################################################################'''
 
-    def move_pad(self, x, y):
+    def move_pad(self, x, y, touch, from_touch_down):
         x_distance = self.center_x - x
         y_distance = self.center_y - y
         x_offset = x - self.center_x
         y_offset = y - self.center_y
         relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
-        if(relative_distance > self._radius_difference):
-            self._update_coordinates_a(
-                x_distance, y_distance, x_offset, y_offset, relative_distance)
-        else:
-            self._update_coordinates_b(
+        touch_is_external = relative_distance > self._total_radius
+        touch_is_internal = relative_distance <= self._radius_difference
+        if touch_is_external and from_touch_down:
+            touch.ud['joystick'] = None
+            return
+        elif touch_is_internal:
+            self._update_coordinates_from_internal_touch(
                 x, y, x_offset, y_offset, relative_distance)
+        elif not(from_touch_down):
+            self._update_coordinates_from_external_touch(
+                x_distance, y_distance, x_offset, y_offset, relative_distance)
 
     def center_pad(self):
         self.ids.pad.center = self.center
@@ -143,8 +144,9 @@ class Joystick(Widget):
         self.pad_x = 0
         self.pad_y = 0
 
-    def _update_coordinates_a(self, x_distance, y_distance,
-                              x_offset, y_offset, relative_distance):
+    def _update_coordinates_from_external_touch(self, x_distance, y_distance,
+                                                x_offset, y_offset,
+                                                relative_distance):
         pad_distance = self._radius_difference * (1.0 / relative_distance)
         x_distance_offset = -x_distance * pad_distance
         y_distance_offset = -y_distance * pad_distance
@@ -156,11 +158,12 @@ class Joystick(Widget):
         self._magnitude = 1.0
         self.ids.pad.center = (x, y)
 
-    def _update_coordinates_b(self, x, y,
-                              x_offset, y_offset, relative_distance):
+    def _update_coordinates_from_internal_touch(self, x, y, x_offset,
+                                                y_offset, relative_distance):
         self.pad_x = x_offset / self._radius_difference
         self.pad_y = y_offset / self._radius_difference
-        self._magnitude = relative_distance / self._total_radius
+        self._magnitude = relative_distance / \
+            (self._total_radius - self.ids.pad._radius)
         self.ids.pad.center = (x, y)
 
     '''####################################################################'''
@@ -219,18 +222,24 @@ class Joystick(Widget):
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
-            self.move_pad(touch.x, touch.y)
-            self.is_active = True
+            touch.ud['joystick'] = self
+            self.move_pad(touch.x, touch.y,
+                          touch=touch, from_touch_down=True)
             return True
         return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
-        if self.is_active:
-            self.move_pad(touch.x, touch.y)
+        if self._touch_is_active(touch):
+            self.move_pad(touch.x, touch.y,
+                          touch=touch, from_touch_down=False)
+            return True
         return super().on_touch_move(touch)
 
     def on_touch_up(self, touch):
-        if self.is_active and not(self.sticky):
+        if self._touch_is_active(touch) and not(self.sticky):
             self.center_pad()
-        self.is_active = False
+            return True
         return super().on_touch_up(touch)
+
+    def _touch_is_active(self, touch):
+        return 'joystick' in touch.ud and touch.ud['joystick'] == self
