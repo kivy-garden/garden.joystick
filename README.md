@@ -3,7 +3,7 @@
 Touch-friendly, analog-gamepad style controls for Kivy.  
 
 ![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/JoystickDemo.gif?raw=true)  
-(***Note:*** `touch` *events are not actually shared between joysticks, collision detection was disabled during this demo in order to keep it short*)
+(***Note:*** `touch` *events are not actually shared between joysticks, collision detection was disabled during this recording in order to keep it short*)
 
 ### [**Code for JoystickDemo**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
 
