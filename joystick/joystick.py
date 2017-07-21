@@ -79,7 +79,7 @@ class Joystick(Widget):
            in relation to the x-axis.'''
 
     '''magnitude, radians, & angle can be used to
-           calculate polar coordinated'''
+           calculate polar coordinates'''
 
     is_active = BooleanProperty(False)
     '''True during on_touch_down & on_touch_move.
