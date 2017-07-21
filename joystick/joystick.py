@@ -18,7 +18,7 @@ class Joystick(Widget):
            position of the joystick pad.'''
 
     '''####################################################################'''
-    '''#####   >   Properties (Customizable   #############################'''
+    '''#####   >   Properties (Customizable)   ############################'''
     '''####################################################################'''
 
     outer_size = NumericProperty(1)
@@ -50,7 +50,7 @@ class Joystick(Widget):
            at the time of on_touch_up.'''
 
     '''####################################################################'''
-    '''#####   >   Properties (Read-Only   ################################'''
+    '''#####   >   Properties (Read-Only)   ###############################'''
     '''####################################################################'''
 
     pad_x = NumericProperty(0.0)
@@ -86,7 +86,7 @@ class Joystick(Widget):
            Remains False after on_touch_up until the next touch event.'''
 
     '''####################################################################'''
-    '''#####   >   Properties (Private   ##################################'''
+    '''#####   >   Properties (Private)   #################################'''
     '''####################################################################'''
 
     _outer_line_width = NumericProperty(OUTLINE_ZERO)
@@ -119,6 +119,49 @@ class Joystick(Widget):
     @property
     def _radius_difference(self):
         return (self._total_radius - self.ids.pad._radius)
+
+    '''####################################################################'''
+    '''#####   >   Pad Control   ##########################################'''
+    '''####################################################################'''
+
+    def move_pad(self, x, y):
+        x_distance = self.center_x - x
+        y_distance = self.center_y - y
+        x_offset = x - self.center_x
+        y_offset = y - self.center_y
+        relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
+        if(relative_distance > self._radius_difference):
+            self._update_coordinates_a(
+                x_distance, y_distance, x_offset, y_offset, relative_distance)
+        else:
+            self._update_coordinates_b(
+                x, y, x_offset, y_offset, relative_distance)
+
+    def center_pad(self):
+        self.ids.pad.center = self.center
+        self._magnitude = 0
+        self.pad_x = 0
+        self.pad_y = 0
+
+    def _update_coordinates_a(self, x_distance, y_distance,
+                              x_offset, y_offset, relative_distance):
+        pad_distance = self._radius_difference * (1.0 / relative_distance)
+        x_distance_offset = -x_distance * pad_distance
+        y_distance_offset = -y_distance * pad_distance
+        x = self.center_x + x_distance_offset
+        y = self.center_y + y_distance_offset
+        radius_offset = pad_distance / self._radius_difference
+        self.pad_x = x_offset * radius_offset
+        self.pad_y = y_offset * radius_offset
+        self._magnitude = 1.0
+        self.ids.pad.center = (x, y)
+
+    def _update_coordinates_b(self, x, y,
+                              x_offset, y_offset, relative_distance):
+        self.pad_x = x_offset / self._radius_difference
+        self.pad_y = y_offset / self._radius_difference
+        self._magnitude = relative_distance / self._total_radius
+        self.ids.pad.center = (x, y)
 
     '''####################################################################'''
     '''#####   >   Layout Events   ########################################'''
@@ -169,49 +212,6 @@ class Joystick(Widget):
     def remove_widget(self, widget):
         super().remove_widget(widget)
         self.do_layout()
-
-    '''####################################################################'''
-    '''#####   >   Pad Control   ##########################################'''
-    '''####################################################################'''
-
-    def move_pad(self, x, y):
-        x_distance = self.center_x - x
-        y_distance = self.center_y - y
-        x_offset = x - self.center_x
-        y_offset = y - self.center_y
-        relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
-        if(relative_distance > self._radius_difference):
-            self._update_coordinates_a(
-                x_distance, y_distance, x_offset, y_offset, relative_distance)
-        else:
-            self._update_coordinates_b(
-                x, y, x_offset, y_offset, relative_distance)
-
-    def _update_coordinates_a(self, x_distance, y_distance,
-                              x_offset, y_offset, relative_distance):
-        pad_distance = self._radius_difference * (1.0 / relative_distance)
-        x_distance_offset = -x_distance * pad_distance
-        y_distance_offset = -y_distance * pad_distance
-        new_x = self.center_x + x_distance_offset
-        new_y = self.center_y + y_distance_offset
-        radius_offset = pad_distance / self._radius_difference
-        self.pad_x = x_offset * radius_offset
-        self.pad_y = y_offset * radius_offset
-        self._magnitude = 1.0
-        self.ids.pad.center = (new_x, new_y)
-
-    def _update_coordinates_b(self, x, y,
-                              x_offset, y_offset, relative_distance):
-        self.pad_x = x_offset / self._radius_difference
-        self.pad_y = y_offset / self._radius_difference
-        self._magnitude = relative_distance / self._total_radius
-        self.ids.pad.center = (x, y)
-
-    def center_pad(self):
-        self.ids.pad.center = self.center
-        self._magnitude = 0
-        self.pad_x = 0
-        self.pad_y = 0
 
     '''####################################################################'''
     '''#####   >   Touch Events   #########################################'''
