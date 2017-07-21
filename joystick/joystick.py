@@ -122,7 +122,7 @@ class Joystick(Widget):
     '''####################################################################'''
 
     def move_pad(self, touch, from_touch_down):
-        td = self._get_touch_data(touch)
+        td = TouchData(self, touch)
         if td.is_external and from_touch_down:
             touch.ud['joystick'] = None
             return False
@@ -138,18 +138,6 @@ class Joystick(Widget):
         self._magnitude = 0
         self.pad_x = 0
         self.pad_y = 0
-
-    def _get_touch_data(self, touch):
-        x_distance = self.center_x - touch.x
-        y_distance = self.center_y - touch.y
-        x_offset = touch.x - self.center_x
-        y_offset = touch.y - self.center_y
-        relative_distance = ((x_distance ** 2) + (y_distance ** 2)) ** 0.5
-        is_external = relative_distance > self._total_radius
-        in_range = relative_distance <= self._radius_difference
-        return TouchData(
-            x_distance, y_distance, x_offset, y_offset,
-            relative_distance, is_external, in_range)
 
     def _update_coordinates_from_external_touch(self, touchdata):
         td = touchdata
