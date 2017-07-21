@@ -4,7 +4,7 @@ Touch-friendly, analog-gamepad style controls for Kivy.
 
 ![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/Example.gif?raw=true)  
 
-### [**Code for Example**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
+### [**Code for JoystickDemo**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
 
 &nbsp;  
 
