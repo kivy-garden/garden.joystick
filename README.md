@@ -16,9 +16,9 @@ See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master
 
 - `pad`, `pad_x`, `pad_y`: The position of the pad, relative to the center of the joystick.  
 - `magnitude`: The distance of the pad from the center of the joystick. Use with radians or angle to get polar coordinates.  
-- `radians` & `angle`:  The radians/degrees around the joystick that the current position is at.
+- `radians` & `angle`:  The radians/degrees of the joystick in relation to the x-axis.
 
-- `is_active`: True during `on_touch_down` & `on_touch_move`. Remains False after `on_touch_up until` the next touch event.
+- `is_active`: True during `on_touch_down` & `on_touch_move`. Remains False after on_touch_up until the next touch event.
 
 **Options:**
 
