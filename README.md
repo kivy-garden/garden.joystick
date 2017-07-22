@@ -1,29 +1,84 @@
 # Kivy Garden: Joystick  
 
-Joystick Widget, intended to get analog like input from the user via a touch screen. The input can then be used as a control of some sort.  
+Touch-friendly, analog-gamepad style controls for Kivy.  
 
-![Example](https://raw.githubusercontent.com/kivy-garden/garden.joystick/master/screenshot.png)
+![Example](https://github.com/kivy-garden/garden.joystick/blob/master/example/JoystickDemo.gif?raw=true)  
+(***Note:*** `touch` *events are not actually shared between joysticks, collision detection was disabled during this recording in order to keep it short*)
 
-## Usage:  
+### [**Code for JoystickDemo**](https://github.com/kivy-garden/garden.joystick/tree/master/example)  
 
-Import it into your project like any other garden widget:  
-
-``` python
-from kivy.garden.joystick import Joystick
-```
+&nbsp;  
 
 ## Widget Properties:  
 
+See [**joystick.py**](https://github.com/kivy-garden/garden.joystick/blob/master/joystick/joystick.py) for further reference.  
+
 **Joystick Data:**  
 
-- `pad_x` & `pad_y`: The percent position of the pad.  
-- `magnitude`: Percent position from origin to perimeter line. mash together with radians or angle to get polar coordinates.  
-- `radians` & `angle`:  The radians/degrees around the joystick that the current position is at. It is solved first for radians, but the angle in degrees is included for simplicity for the implementer.  
+- `pad`, `pad_x`, `pad_y`: The position of the pad, relative to the center of the joystick.  
+- `magnitude`: The distance of the pad from the center of the joystick. Use with radians or angle to get polar coordinates.  
+- `radians` & `angle`:  The radians/degrees of the joystick in relation to the x-axis.
+
+**Options:**
+
+- `sticky`: False by default. When True, the pad will maintain its final position after `on_touch_up`. Otherwise, the pad will rebound to the center of the joystick `on_touch_up`.
 
 **Style:**  
 
-- `background_color`: The color for the whole background of the widget.  
-- `perimeter_color`: Color of the perimeter line.  
-- `perimeter_line_width`: The width of the perimeter line of the joystick's control area.  
-- `pad_color`: Color of the control pad.  
-- `pad_width`: Size of the control pad.  
+* The joystick is composed of 3 circles, two for the base (*inner & outer*) and one for the pad. Each of the circles has properties for size, background color, outline color, & outline width. Check out the [**JoystickDemo**](https://github.com/kivy-garden/garden.joystick/tree/master/example) for some example style configurations.
+
+&nbsp;  
+
+## Usage:  
+
+**@ Python:**  
+
+``` python
+from kivy.app import App
+from kivy.garden.joystick import Joystick
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+
+class DemoApp(App):
+  def build(self):
+    self.root = BoxLayout()
+    self.root.padding = 50
+    joystick = Joystick()
+    joystick.bind(pad=self.update_coordinates)
+    self.root.add_widget(joystick)
+    self.label = Label()
+    self.root.add_widget(self.label)
+  def update_coordinates(self, joystick, pad):
+    x = str(pad[0])[0:5]
+    y = str(pad[1])[0:5]
+    radians = str(joystick.radians)[0:5]
+    magnitude = str(joystick.magnitude)[0:5]
+    angle = str(joystick.angle)[0:5]
+    text = "x: {}\ny: {}\nradians: {}\nmagnitude: {}\nangle: {}"
+    self.label.text = text.format(x, y, radians, magnitude, angle)
+
+DemoApp().run()
+```
+
+**@ KV:**  
+
+``` yaml
+#: import Joystick kivy.garden.joystick.Joystick
+
+BoxLayout:
+
+  Joystick:
+    sticky: False
+    outer_size: 1
+    inner_size: 0.75
+    pad_size:   0.5
+    outer_line_width: 0.01
+    inner_line_width: 0.01
+    pad_line_width:   0.01
+    outer_background_color: (0.75, 0.75, 0.75, 0.3)
+    outer_line_color:       (0.25, 0.25, 0.25, 0.3)
+    inner_background_color: (0.75, 0.75, 0.75, 0.1)
+    inner_line_color:       (0.7,  0.7,  0.7,  0.1)
+    pad_background_color:   (0.4,  0.4,  0.4,  0.3)
+    pad_line_color:         (0.35, 0.35, 0.35, 0.3)
+```
