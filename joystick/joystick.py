@@ -25,8 +25,10 @@ class Joystick(Widget):
     outer_size = NumericProperty(1)
     inner_size = NumericProperty(0.75)
     pad_size = NumericProperty(0.5)
-    '''pad_size & outer_size are defined by percentage,
-           1.0 being 100%, of the total widget size.'''
+    '''Sizes are defined by percentage,
+           1.0 being 100%, of the total widget size.
+        The smallest value of widget.width & widget.height
+           is used as a baseline for these percentages.'''
 
     outer_background_color = ListProperty([0.75, 0.75, 0.75, 1])
     inner_background_color = ListProperty([0.75, 0.75, 0.75, 1])
@@ -57,10 +59,11 @@ class Joystick(Widget):
     pad_x = NumericProperty(0.0)
     pad_y = NumericProperty(0.0)
     pad = ReferenceListProperty(pad_x, pad_y)
-    '''pad values are oordinates in relation to the center of the joystick.
+    '''pad values are touch coordinates in relation to
+           the center of the joystick.
        pad_x & pad_y return values between -1.0 & 1.0.
-       pad returns a tuple of pad_x & pad_y, and the best property to
-       bind to in order to receive updates from the joystick.'''
+       pad returns a tuple of pad_x & pad_y, and is the best property to
+           bind to in order to receive updates from the joystick.'''
 
     @property
     def magnitude(self):
@@ -76,7 +79,7 @@ class Joystick(Widget):
     @property
     def angle(self):
         return math.degrees(self.radians)
-    '''poasition of the pad in radians, between 0.0 & 6.283,
+    '''position of the pad in radians, between 0.0 & 6.283,
            in relation to the x-axis.'''
 
     '''magnitude, radians, & angle can be used to
