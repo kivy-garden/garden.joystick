@@ -181,11 +181,11 @@ class Joystick(Widget):
         self.do_layout()
 
     def add_widget(self, widget):
-        super().add_widget(widget)
+        super(Joystick, self).add_widget(widget)
         self.do_layout()
 
     def remove_widget(self, widget):
-        super().remove_widget(widget)
+        super(Joystick, self).remove_widget(widget)
         self.do_layout()
 
     def _update_outlines(self, size):
@@ -221,18 +221,18 @@ class Joystick(Widget):
         if self.collide_point(touch.x, touch.y):
             touch.ud['joystick'] = self
             return self.move_pad(touch, from_touch_down=True)
-        return super().on_touch_down(touch)
+        return super(Joystick, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if self._touch_is_active(touch):
             return self.move_pad(touch, from_touch_down=False)
-        return super().on_touch_move(touch)
+        return super(Joystick, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if self._touch_is_active(touch) and not(self.sticky):
             self.center_pad()
             return True
-        return super().on_touch_up(touch)
+        return super(Joystick, self).on_touch_up(touch)
 
     def _touch_is_active(self, touch):
         return 'joystick' in touch.ud and touch.ud['joystick'] == self
